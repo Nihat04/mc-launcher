@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'">
+    <link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" href="styles.css" />
+    <title>GorloCraft</title>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="header__settings">
+          <a class="header__setting-link" href="#">
+            <img class="header__settings-icon" src="../assets/svg/settings-icon.svg" alt="настройки">
+          </a>
+        </div>
+        <div class="header__drag-area"></div>
+        <div class="header__window-manager">
+          <a href="#" class="header__window-minimize__link">
+            <img src="../assets/svg/minimize-icon.svg" alt="свернуть окно" class="header__window-minimize-icon">
+          </a>
+          <a href="#" class="header__window-close__link">
+            <img src="../assets/svg/close-icon.svg" alt="закрыть окно" class="header__window-close-icon">
+          </a>
+        </div>
+      </header>
+      <main>
+        <section class="information-panel">
+          <a href="https://github.com/Nihat04/GorloCraft/blob/main/gorlocraftProfile.json" download>DOWNALOD</a>
+        </section>
+        <section class="play">
+          <input id="nick-name" class="play__inp" type="text" placeholder="Псевдоним">
+          <button id="play-btn" class="btn play__btn">Играть</button> 
+        </section>
+        <section class="update">
+          <h2 class="update__header">Обновление</h2>
+          <p class="update__descr">Вышло новое обновление клиента!</p>
+          <div class="update__btns">
+            <button class="update__btn update__no-btn">НЕТ</button>
+            <button class="update__btn update__yes-btn">Обновится</button>
+          </div>
+        </section>
+        <section class="progress-bar">
+          
+        </section>
+      </main>
+      <footer></footer>
+    </div>
+  </body>
+  <script defer src="renderer.js"></script>
+</html>

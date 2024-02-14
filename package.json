@@ -1,0 +1,19 @@
+{
+  "name": "mc-launcher",
+  "productName": "GorloCraft",
+  "version": "1.0.0",
+  "description": "minecraft launcher for GorloCraft Server",
+  "main": "main.js",
+  "scripts": {
+    "dev": "electron ."
+  },
+  "author": "Nihat",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "base-64": "^1.0.0",
+    "electron": "^28.2.2",
+    "minecraft-launcher-core": "^3.17.3",
+    "utf8": "^3.0.0"
+  }
+}

@@ -1,0 +1,172 @@
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+
+button {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+}
+
+input {
+    border: none;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.container {
+    position: absolute;
+    width: 950px;
+    height: 600px;
+    border-radius: 20px;
+    background-image: url("../assets/img/launcher-bg.png");
+    background-size: 950px 600px;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+.btn {
+    cursor: pointer;
+}
+
+.visible {
+    display: block !important;
+}
+
+/* header */
+
+.header {
+    display: flex;
+}
+
+.header__setting-link {
+    --settings-width: 40px;
+    --settings-height: 40px;
+    position: relative;
+    display: inline-block;
+    width: var(--settings-width);
+    height: var(--settings-height);
+}
+
+.header__settings-icon {
+    position: absolute;
+    width: var(--settings-width);
+    height: var(--settings-height);
+    top: 0;
+    left: 0;
+    user-select: none;
+}
+
+.header__drag-area {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+    width: 850px;
+    height: 40px;
+}
+
+.header__window-manager {
+    display: flex;
+    margin-left: auto;
+    margin-top: 19px;
+    margin-right: 20px;
+    gap: 10px;
+}
+
+.header__window-manager:nth-child(n) {
+    user-select: none;
+}
+
+/* MAIN */
+
+/* information-panel */
+
+.information-panel {
+    width: 300px;
+    height: calc(100vh - 40px);
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 0px 20px 0 0;
+}
+
+/* play */
+
+.play {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    bottom: 30px;
+    right: 30px;
+    gap: 20px;
+}
+
+.play__inp {
+    width: 180px;
+    height: 40px;
+    color: whitesmoke;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 90);
+    border-radius: 5px;
+}
+
+.play__btn {
+    width: 150px;
+    height: 60px;
+    color: #bbb;
+    font-size: 32px;
+    font-weight: 700;
+    background-color: #333;
+    border-radius: 6px;
+    user-select: none;
+}
+
+/* update */
+
+.update {
+    position: absolute;
+    display: none;
+    width: 250px;
+    height: 175px;
+    top: 50%;
+    left: 50%;
+    color: #fff;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 20px;
+    transform: translate(-50%, -50%);
+}
+
+.update__descr {
+    margin-bottom: 30px;
+}
+
+.update__btns {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.update__btn {
+    border-radius: 8px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.update__yes-btn {
+    width: 145px;
+    height: 30px;
+    background-color: #289900;
+}
+
+.update__no-btn {
+    width: 55px;
+    height: 30px;
+    background-color: #545454;
+}
