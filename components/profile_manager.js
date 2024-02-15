@@ -5,6 +5,10 @@ const fs = require('fs');
 const profilePath = path.join(directory, "gorlocraftProfile.json");
 const modsFolderPath = path.join(directory, "mods");
 
+function exist() {
+    return fs.existsSync(profilePath);
+}
+
 function getProfile() {
     const jsonObj = fs.readFileSync(profilePath);
     return JSON.parse(jsonObj);
@@ -31,4 +35,4 @@ function getMods() {
     })
 }
 
-module.exports = { getVersion, getMods, updateProfile }
+module.exports = { exist, getVersion, getMods, updateProfile }

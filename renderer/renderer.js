@@ -5,12 +5,20 @@ const minimizeLink = document.querySelector('.header__window-minimize__link')
 const updateWindow = document.querySelector('.update');
 const updateWindowNoBtn = document.querySelector('.update__no-btn');
 const updateWindowYesBtn = document.querySelector('.update__yes-btn');
+const progressBarComplete = document.querySelector('.progress-bar__complete')
 
 playBtn.addEventListener('click', async (e) => {
     e.preventDefault();
 
+    increseComplete(10);
+
+    if(!profileManager.exist()) {
+        update.installProject();
+        return
+    }
+
     if(await update.available()) {
-        updateWindow.classList.add('visible')
+        update.updateClient();
         return
     }
     

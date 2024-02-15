@@ -8,9 +8,51 @@ const path = require("path");
 const profileManager = require("./profile_manager");
 const { directory } = require('./mc_launcher');
 
+const PROFILE_PATH = "gorlocraftProfile.json";
 const octokit = new Octokit();
 
-const PROFILE_PATH = "gorlocraftProfile.json";
+async function installProject() {
+  const folders = ['mods', 'resourcepacks', 'versions/fabric-loader-0.14.23-1.18.2'];
+  const files = ['gorlocraftProfile.json', 'servers.dat', 'options.txt'];
+
+  var totalFiles = files.length;
+
+  console.log(directory);
+  
+  for(folder of folders) {
+    const folderPath = path.join(directory, folder);
+
+    if(!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, {recursive: true});
+    }
+
+    const folderData = await getFile(folder).then(res => res.data);
+    totalFiles += folderData.length;
+
+    for(file of folderData) {
+      const newFile = fs.createWriteStream(path.join(directory, folder, file.name))
+
+      https.get(file.download_url, (res) => {
+        res.pipe(newFile);
+      })
+
+      await newFile.on('finish', () => newFile.close());
+    }
+  }
+
+  for(file of files) {
+    const fileData = await getFile(file).then(res => res.data);
+    const newFile = fs.createWriteStream(path.join(directory, fileData.name))
+
+    https.get(fileData.download_url, (res) => {
+      res.pipe(newFile);
+    })
+
+    await newFile.on('finish', () => newFile.close());
+  }
+
+  return totalFiles;
+}
 
 function getFile(filePath) {
   return octokit.request("GET /repos/{owner}/{repo}/contents/{path}", {
@@ -86,4 +128,4 @@ async function updateClient() {
   profileManager.updateProfile(serverProfile);
 }
 
-module.exports = { getFile, updateAvailable, updateClient };
+module.exports = { getFile, updateAvailable, updateClient, installProject };

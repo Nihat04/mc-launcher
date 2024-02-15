@@ -60,6 +60,12 @@ body {
     top: 0;
     left: 0;
     user-select: none;
+    transition: all 0.1s linear;
+}
+
+.header__settings-icon:hover {
+    filter: invert(50%) sepia(90%) saturate(80%) hue-rotate(87deg) brightness(70%) contrast(119%);
+    transition: all 0.1s linear;
 }
 
 .header__drag-area {
@@ -79,6 +85,14 @@ body {
 
 .header__window-manager:nth-child(n) {
     user-select: none;
+}
+
+.header__window-minimize-icon:hover {
+    filter: invert(78%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%);
+}
+
+.header__window-close-icon:hover {
+    filter: invert(78%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%);
 }
 
 /* MAIN */
@@ -123,6 +137,20 @@ body {
     background-color: #333;
     border-radius: 6px;
     user-select: none;
+    transition: all 0.15s linear;
+}
+
+.play__btn:hover {
+    background-color: #660000;
+    transition: all 0.15s linear;
+}
+
+.play__btn:active {
+    background-color: #3d0000;
+}
+
+.play__btn:focus {
+    background-color: #3d0000;
 }
 
 /* update */

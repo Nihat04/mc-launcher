@@ -1,7 +1,8 @@
 const { Client, Authenticator } = require('minecraft-launcher-core');
+const path = require('path');
 
 const launcher = new Client();
-const directory = (process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")) + "/.GorloCraft";
+const directory = path.join((process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")) , ".GorloCraft");
 
 let opts = {
     // For production launchers, I recommend not passing 
@@ -22,7 +23,6 @@ let opts = {
 }
 
 function launch(nickName) {
-    console.log("MINECRAFT LAUNCHING");
     opts.authorization = Authenticator.getAuth(nickName);
     return launcher.launch(opts);
 }
