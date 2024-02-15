@@ -5,7 +5,7 @@ const minimizeLink = document.querySelector('.header__window-minimize__link')
 const updateWindow = document.querySelector('.update');
 const updateWindowNoBtn = document.querySelector('.update__no-btn');
 const updateWindowYesBtn = document.querySelector('.update__yes-btn');
-const progressBarComplete = document.querySelector('.progress-bar__complete')
+const informationPanel = document.querySelector('.information-panel');
 
 playBtn.addEventListener('click', async (e) => {
     e.preventDefault();
@@ -46,4 +46,10 @@ updateWindowNoBtn.addEventListener('click', () => {
 
 updateWindowYesBtn.addEventListener('click', () => {
     update.updateClient();
+})
+
+ipcRenderer.on('file:done', (e, data) => {
+    informationPanel.innerHTML += `
+        <p>${data.name}</p>
+    `
 })

@@ -7,6 +7,7 @@ const path = require("path");
 
 const profileManager = require("./profile_manager");
 const { directory } = require('./mc_launcher');
+const { send } = require('../main');
 
 const PROFILE_PATH = "gorlocraftProfile.json";
 const octokit = new Octokit();
@@ -36,7 +37,10 @@ async function installProject() {
         res.pipe(newFile);
       })
 
-      await newFile.on('finish', () => newFile.close());
+      await newFile.on('finish', () => {
+        send({name: file.name})
+        newFile.close()
+      });
     }
   }
 
@@ -48,7 +52,10 @@ async function installProject() {
       res.pipe(newFile);
     })
 
-    await newFile.on('finish', () => newFile.close());
+    await newFile.on('finish', () => {
+      send({name: fileData.name})
+      newFile.close()
+    });
   }
 
   return totalFiles;

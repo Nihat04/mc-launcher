@@ -40,6 +40,12 @@ ipcMain.on('window:minimize', (e, data) => {
     mainWin.minimize();
 })
 
+function send(data) {
+    mainWin.webContents.send('file:done', data);
+}
+
 app.whenReady().then(() => {
     createWindow();
 });
+
+module.exports = { send };
