@@ -7,16 +7,27 @@ const path = require("path");
 
 const profileManager = require("./profile_manager");
 const { directory } = require('./mc_launcher');
-const { send } = require('../main');
 
 const PROFILE_PATH = "gorlocraftProfile.json";
 const octokit = new Octokit();
 
-async function installProject() {
+async function installGameFiles() {
   const folders = ['mods', 'resourcepacks', 'versions/fabric-loader-0.14.23-1.18.2'];
   const files = ['gorlocraftProfile.json', 'servers.dat', 'options.txt'];
 
-  var totalFiles = files.length;
+  const downloadFile = async (fileData) => {
+    const newFile = fs.createWriteStream(path.join(directory, fileData.name))
+
+    https.get(fileData.download_url, (res) => {
+      res.pipe(newFile);
+    })
+
+    // await newFile.on('finish', () => {
+    //   newFile.close()
+    // });
+  }
+
+  var totalFiles = [];
 
   console.log(directory);
   
@@ -28,34 +39,15 @@ async function installProject() {
     }
 
     const folderData = await getFile(folder).then(res => res.data);
-    totalFiles += folderData.length;
 
     for(file of folderData) {
-      const newFile = fs.createWriteStream(path.join(directory, folder, file.name))
-
-      https.get(file.download_url, (res) => {
-        res.pipe(newFile);
-      })
-
-      await newFile.on('finish', () => {
-        send({name: file.name})
-        newFile.close()
-      });
+      downloadFile(file);
     }
   }
 
   for(file of files) {
     const fileData = await getFile(file).then(res => res.data);
-    const newFile = fs.createWriteStream(path.join(directory, fileData.name))
-
-    https.get(fileData.download_url, (res) => {
-      res.pipe(newFile);
-    })
-
-    await newFile.on('finish', () => {
-      send({name: fileData.name})
-      newFile.close()
-    });
+    downloadFile(fileData);
   }
 
   return totalFiles;
@@ -109,6 +101,8 @@ function convertBaseToUtf(str) {
 
 async function updateAvailable() {
   var clientVersion = profileManager.getVersion();
+  console.log(clientVersion);
+  if(clientVersion == null) return null;
   var serverVersion = await getVersion();
 
   console.log(`client: ${clientVersion}\nserver: ${serverVersion}`);
@@ -135,4 +129,4 @@ async function updateClient() {
   profileManager.updateProfile(serverProfile);
 }
 
-module.exports = { getFile, updateAvailable, updateClient, installProject };
+module.exports = { getFile, updateAvailable, updateClient, installGameFiles };

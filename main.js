@@ -30,22 +30,25 @@ ipcMain.on('game:run', (e, data) => {
     const {nickName} = data;
     let minecraft = mcLauncher.launch(nickName, mainWin);
     minecraft.then(()=>mainWin.close());
-})
+});
 
 ipcMain.on('window:close', (e, data) => {
     mainWin.close();
-})
+});
 
 ipcMain.on('window:minimize', (e, data) => {
     mainWin.minimize();
-})
+});
 
-function send(data) {
-    mainWin.webContents.send('file:done', data);
-}
+ipcMain.on('game:install', async (e, data) => {
+    const file = await githubInstaller.installGameFiles();
+    console.log(file);
+//     file.on('finish', () => {
+//         mainWin.webContents.send('file:done');
+//         file.close();
+//     })
+})
 
 app.whenReady().then(() => {
     createWindow();
 });
-
-module.exports = { send };

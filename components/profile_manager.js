@@ -10,17 +10,19 @@ function exist() {
 }
 
 function getProfile() {
+    if(!fs.existsSync(profilePath)) return null;
     const jsonObj = fs.readFileSync(profilePath);
     return JSON.parse(jsonObj);
 }
 
 function updateProfile(obj) {
     const jsonText = JSON.stringify(obj);
-    const file = fs.writeFileSync(profilePath, jsonText);
+    fs.writeFileSync(profilePath, jsonText);
 }
 
 function getVersion() {
     const profile = getProfile();
+    if(profile == null) return null
     return profile.modsVersion;
 }
 
@@ -35,4 +37,16 @@ function getMods() {
     })
 }
 
-module.exports = { exist, getVersion, getMods, updateProfile }
+function saveProperties(props) {
+    const jsonText = JSON.stringify(props);
+    fs.writeFileSync(path.join(directory, 'launcherProperties.json'), jsonText);
+}
+
+function getProperties() {
+    if(!fs.existsSync(path.join(directory, 'launcherProperties.json'))) return null;
+
+    const fileData = fs.readFileSync(path.join(directory, 'launcherProperties.json'));
+    return JSON.parse(fileData);
+}
+
+module.exports = { exist, getVersion, getMods, updateProfile, saveProperties, getProperties }

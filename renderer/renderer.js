@@ -10,11 +10,9 @@ const informationPanel = document.querySelector('.information-panel');
 playBtn.addEventListener('click', async (e) => {
     e.preventDefault();
 
-    increseComplete(10);
-
     if(!profileManager.exist()) {
-        update.installProject();
-        return
+        // await update.installGameFiles();
+        ipcRenderer.send('game:install');
     }
 
     if(await update.available()) {
@@ -22,14 +20,14 @@ playBtn.addEventListener('click', async (e) => {
         return
     }
     
-    const nickName = nickInput.value;
+    const username = nickInput.value;
     
-    if(!nickName) {
+    if(!username) {
         console.log("nickname invalid");
         return;
     }
-
-    ipcRenderer.send('game:run', {nickName});
+    profileManager.saveProperties({username})
+    ipcRenderer.send('game:run', {nickName: username});
 });
 
 closeLink.addEventListener('click', () => {
@@ -48,8 +46,11 @@ updateWindowYesBtn.addEventListener('click', () => {
     update.updateClient();
 })
 
-ipcRenderer.on('file:done', (e, data) => {
-    informationPanel.innerHTML += `
-        <p>${data.name}</p>
-    `
+ipcRenderer.on('file:done', () => {
+    console.log('done');
 })
+
+const properties = profileManager.getProperties();
+if(properties !== null) {
+    nickInput.value = properties.username;
+}

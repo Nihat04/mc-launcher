@@ -11,9 +11,11 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 contextBridge.exposeInMainWorld('update', {
     available: () => githubInstaller.updateAvailable(),
     updateClient: () => githubInstaller.updateClient(),
-    installProject: () => githubInstaller.installProject()
+    installGameFiles: () => githubInstaller.installGameFiles()
 });
 
 contextBridge.exposeInMainWorld('profileManager', {
-    exist: () => profileManager.exist()
+    exist: () => profileManager.exist(),
+    saveProperties: (data) => profileManager.saveProperties(data),
+    getProperties: () => profileManager.getProperties()
 })
