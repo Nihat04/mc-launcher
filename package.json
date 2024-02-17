@@ -1,19 +1,45 @@
 {
   "name": "mc-launcher",
   "productName": "GorloCraft",
-  "version": "1.0.0",
+  "version": "0.4.9",
   "description": "minecraft launcher for GorloCraft Server",
   "main": "main.js",
   "scripts": {
-    "dev": "electron ."
+    "dev": "electron .",
+    "build": "electron-builder"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nihat04/mc-launcher"
+  },
+
+  "build": {
+    "appId": "gorlocraft",
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "uninstallDisplayName": "gorlocraft-uninstaller",
+      "allowToChangeInstallationDirectory": false
+    }
+  },
+
   "author": "Nihat",
   "license": "MIT",
   "dependencies": {
     "@octokit/rest": "^20.0.2",
     "base-64": "^1.0.0",
-    "electron": "^28.2.2",
     "minecraft-launcher-core": "^3.17.3",
     "utf8": "^3.0.0"
+  },
+  "devDependencies": {
+    "electron": "^28.2.2",
+    "electron-builder": "^24.9.1"
   }
 }

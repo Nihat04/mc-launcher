@@ -30,8 +30,10 @@
         <section class="information-panel">
         </section>
         <section class="play">
-          <input id="nick-name" class="play__inp" type="text" placeholder="Имя пользователя">
-          <button id="play-btn" class="btn play__btn">Играть</button> 
+          <form class="play__form">
+            <input id="nick-name" class="play__inp" type="text" placeholder="Имя пользователя" required>
+            <button id="play-btn" class="btn play__btn">Играть</button> 
+          </form>
         </section>
         <section class="update">
           <h2 class="update__header">Обновление</h2>
@@ -41,6 +43,7 @@
             <button class="update__btn update__yes-btn">Обновится</button>
           </div>
         </section>
+        <span class="loader"></span>
       </main>
       <footer></footer>
     </div>

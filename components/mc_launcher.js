@@ -27,7 +27,4 @@ function launch(nickName) {
     return launcher.launch(opts);
 }
 
-module.exports = { launch, directory };
-
-// launcher.on('debug', (e) => console.log(e));
-// launcher.on('data', (e) => console.log(e));
+module.exports = { launch, directory, launcher };

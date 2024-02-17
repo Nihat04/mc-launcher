@@ -11,21 +11,25 @@ const { directory } = require('./mc_launcher');
 const PROFILE_PATH = "gorlocraftProfile.json";
 const octokit = new Octokit();
 
-async function installGameFiles() {
-  const folders = ['mods', 'resourcepacks', 'versions/fabric-loader-0.14.23-1.18.2'];
-  const files = ['gorlocraftProfile.json', 'servers.dat', 'options.txt'];
-
-  const downloadFile = async (fileData) => {
-    const newFile = fs.createWriteStream(path.join(directory, fileData.name))
-
+async function installFile(folderPath, fileData, logFunc = null) {
+  return new Promise(resolve => {
+    const newFile = fs.createWriteStream(path.join(folderPath, fileData.name))
+  
     https.get(fileData.download_url, (res) => {
       res.pipe(newFile);
     })
+  
+    newFile.on('finish', () => {
+      if(logFunc !== null)  logFunc(fileData.name);
+      newFile.close()
+      resolve("INSTALLED");
+    });
+  })
+}
 
-    // await newFile.on('finish', () => {
-    //   newFile.close()
-    // });
-  }
+async function installGameFiles(logFunc) {
+  const folders = ['mods', 'resourcepacks', 'versions/fabric-loader-0.14.23-1.18.2'];
+  const files = ['gorlocraftProfile.json', 'servers.dat', 'options.txt'];
 
   var totalFiles = [];
 
@@ -41,13 +45,13 @@ async function installGameFiles() {
     const folderData = await getFile(folder).then(res => res.data);
 
     for(file of folderData) {
-      downloadFile(file);
+      await installFile(folderPath, file, logFunc);
     }
   }
 
   for(file of files) {
     const fileData = await getFile(file).then(res => res.data);
-    downloadFile(fileData);
+    await installFile(directory, fileData, logFunc);
   }
 
   return totalFiles;
@@ -84,14 +88,7 @@ async function getVersion() {
 
 async function getMods() {
   const folderData = await getFile("mods").then((res) => res.data);
-  const mods = folderData.map((el) => {
-    return {
-        name: el.name,
-        type: el.type,
-        url: el.download_url
-    }
-  });
-  return mods;
+  return folderData;
 }
 
 function convertBaseToUtf(str) {
@@ -101,7 +98,7 @@ function convertBaseToUtf(str) {
 
 async function updateAvailable() {
   var clientVersion = profileManager.getVersion();
-  console.log(clientVersion);
+
   if(clientVersion == null) return null;
   var serverVersion = await getVersion();
 
@@ -110,23 +107,20 @@ async function updateAvailable() {
   return clientVersion !== serverVersion;
 }
 
-async function updateClient() {
+async function updateClient(logFunc) {
   const clientMods = profileManager.getMods();
   const serverMods = await getMods();
 
   for(mod of serverMods) {
     if(!clientMods.find(el => el.name === mod.name)) {
-        const file = fs.createWriteStream(path.join(directory, 'mods', mod.name));
-        const request = https.get(mod.url, (res) => {
-            res.pipe(file);
-        });
-
-        file.on('finish', () => file.close);
+        const fileDirectory = path.join(directory, 'mods');
+        await installFile(fileDirectory, mod, logFunc);
     }
   }
 
   const serverProfile = await getProfile();
   profileManager.updateProfile(serverProfile);
+  logFunc("PROFILE UPDATED")
 }
 
 module.exports = { getFile, updateAvailable, updateClient, installGameFiles };

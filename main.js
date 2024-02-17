@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, globalShortcut } = require("electron");
 const path = require('path');
 
 const mcLauncher = require('./components/mc_launcher');
@@ -8,7 +8,9 @@ const githubInstaller = require('./components/github_installer');
 let mainWin;
 
 const createWindow = () => {
+
     mainWin = new BrowserWindow({
+        icon: path.join(__dirname, 'icon.ico'),
         width: 950,
         height: 600,
         resizable: false,
@@ -18,18 +20,18 @@ const createWindow = () => {
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
-            preload: path.join(__dirname, "preload.js")
+            preload: path.join(__dirname, "preload.js"),
+            devTools: false
         }
     });
 
-    mainWin.webContents.openDevTools();
     mainWin.loadFile('renderer/index.html');
 }
 
 ipcMain.on('game:run', (e, data) => {
     const {nickName} = data;
-    let minecraft = mcLauncher.launch(nickName, mainWin);
-    minecraft.then(()=>mainWin.close());
+    let minecraft = mcLauncher.launch(nickName);
+    minecraft.then(() => mainWin.close());
 });
 
 ipcMain.on('window:close', (e, data) => {
@@ -40,15 +42,8 @@ ipcMain.on('window:minimize', (e, data) => {
     mainWin.minimize();
 });
 
-ipcMain.on('game:install', async (e, data) => {
-    const file = await githubInstaller.installGameFiles();
-    console.log(file);
-//     file.on('finish', () => {
-//         mainWin.webContents.send('file:done');
-//         file.close();
-//     })
-})
-
 app.whenReady().then(() => {
     createWindow();
+
+    globalShortcut.unregisterAll();
 });
