@@ -45,9 +45,9 @@ if(properties !== null) {
 const screenLog = (data) => {
     const {outputText, filesDownloaded, filesTotal, type} = data;
 
-    // if(informationPanelLogger.children.length >= 200) {
-    //     informationPanelLogger.children[0].remove();
-    // }
+    if(informationPanelLogger.children.length >= 150) {
+        informationPanelLogger.children[0].remove();
+    }
 
     informationPanelLogger.innerHTML += `
         <p class="information-panel__logger__log ${type ? "information-panel__log__"+type : ""}">${outputText}</p>
@@ -63,4 +63,8 @@ const screenLog = (data) => {
 
 ipcRenderer.on('game:log', (e, data) => {
     screenLog({outputText:e,type:"normal"});
-})
+});
+
+ipcRenderer.on('game:launched', () => {
+    loader.classList.remove('visible');
+});

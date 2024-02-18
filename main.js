@@ -21,7 +21,7 @@ const createWindow = () => {
             contextIsolation: true,
             nodeIntegration: true,
             preload: path.join(__dirname, "preload.js"),
-            devTools: true
+            devTools: false
         }
     });
 
@@ -38,7 +38,7 @@ ipcMain.on('game:run', async (e, data) => {
 
     minecraft.launcher.on('data', (e) => mainWin.webContents.send('game:log', e) );
 
-    // minecraft.minecraft.then(() => mainWin.close());
+    minecraft.minecraft.then(() => mainWin.webContents.send('game:launched', {}));
 });
 
 ipcMain.on('window:close', (e, data) => {
