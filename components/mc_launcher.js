@@ -19,12 +19,16 @@ let opts = {
     memory: {
         max: "10G",
         min: "4G"
-    }
+    },
+    javaPath: 'javaw.exe'
 }
 
 function launch(nickName) {
     opts.authorization = Authenticator.getAuth(nickName);
-    return launcher.launch(opts);
+    return {
+        minecraft: launcher.launch(opts),
+        launcher: launcher
+    };
 }
 
-module.exports = { launch, directory, launcher };
+module.exports = { launch, directory };

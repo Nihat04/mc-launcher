@@ -10,8 +10,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 
 contextBridge.exposeInMainWorld('update', {
     available: () => githubInstaller.updateAvailable(),
-    updateClient: (logFunc) => githubInstaller.updateClient(logFunc),
-    installGameFiles: (logFunc) => githubInstaller.installGameFiles(logFunc)
+    updateClient: (logFunc) => githubInstaller.updateClient(logFunc)
 });
 
 contextBridge.exposeInMainWorld('profileManager', {

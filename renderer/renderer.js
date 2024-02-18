@@ -5,7 +5,8 @@ const minimizeLink = document.querySelector('.header__window-minimize__link')
 const updateWindow = document.querySelector('.update');
 const updateWindowNoBtn = document.querySelector('.update__no-btn');
 const updateWindowYesBtn = document.querySelector('.update__yes-btn');
-const informationPanel = document.querySelector('.information-panel');
+const informationPanelLogger = document.querySelector('.information-panel__logger');
+const informationPanelProgress = document.querySelector('.information-panel__progress');
 const loader = document.querySelector('.loader')
 
 playBtn.addEventListener('click', async (e) => {
@@ -13,21 +14,18 @@ playBtn.addEventListener('click', async (e) => {
 
     const username = nickInput.value;
     if(!username) {
-        screenLog('INVALID USERNAME')
+        screenLog({outputText:'INVALID USERNAME', type:'error'});
         return;
     }
 
     loader.classList.add('visible');
-    if(!profileManager.exist()) {
-        await update.installGameFiles(screenLog);
-    } else {   
-        if(await update.available()) {
-            await update.updateClient(screenLog);
-        }
+
+    if(await update.available()) {
+        await update.updateClient(screenLog);
     }
     
     profileManager.saveProperties({username})
-    screenLog('MINECRAFT LAUNCHED');
+    screenLog({outputText:'MINECRAFT LAUNCHED', type:'success'});
     ipcRenderer.send('game:run', {nickName: username});
 });
 
@@ -44,9 +42,25 @@ if(properties !== null) {
     nickInput.value = properties.username;
 }
 
-const screenLog = (text) => {
-    informationPanel.innerHTML += `
-        <p class="information-panel__log">${text}</p>
+const screenLog = (data) => {
+    const {outputText, filesDownloaded, filesTotal, type} = data;
+
+    // if(informationPanelLogger.children.length >= 200) {
+    //     informationPanelLogger.children[0].remove();
+    // }
+
+    informationPanelLogger.innerHTML += `
+        <p class="information-panel__logger__log ${type ? "information-panel__log__"+type : ""}">${outputText}</p>
     `
-    informationPanel.scrollTop = informationPanel.scrollHeight - informationPanel.clientHeight;
+
+    if(filesDownloaded && filesTotal) {
+        const progressText = `${filesDownloaded}/${filesTotal}`
+        informationPanelProgress.textContent = progressText;
+    }
+
+    informationPanelLogger.scrollTop = informationPanelLogger.scrollHeight - informationPanelLogger.clientHeight;
 }
+
+ipcRenderer.on('game:log', (e, data) => {
+    screenLog({outputText:e,type:"normal"});
+})

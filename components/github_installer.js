@@ -11,50 +11,79 @@ const { directory } = require('./mc_launcher');
 const PROFILE_PATH = "gorlocraftProfile.json";
 const octokit = new Octokit();
 
+var filesCount = 0;
+var downloadedFilesCount = 0;
+var resolve = null;
+
 async function installFile(folderPath, fileData, logFunc = null) {
-  return new Promise(resolve => {
-    const newFile = fs.createWriteStream(path.join(folderPath, fileData.name))
-  
-    https.get(fileData.download_url, (res) => {
-      res.pipe(newFile);
-    })
-  
-    newFile.on('finish', () => {
-      if(logFunc !== null)  logFunc(fileData.name);
-      newFile.close()
-      resolve("INSTALLED");
-    });
+
+  if(fileData.type === 'dir') {
+    if(logFunc) logFunc({outputText:'folder is not file', type:'error'});
+    filesCount--;
+    return;
+  }
+
+  const newFile = fs.createWriteStream(path.join(folderPath, fileData.name))
+
+  https.get(fileData.download_url, (res) => {
+    res.pipe(newFile);
   })
+
+  newFile.on('finish', () => {
+    if(logFunc !== null)  logFunc({outputText:fileData.name, type:'success', filesDownloaded: downloadedFilesCount, filesTotal: filesCount});
+    newFile.close()
+    downloadedFilesCount++;
+    if(filesCount > 0 && downloadedFilesCount === filesCount) {
+      resolve('done');
+    }
+  });
 }
 
-async function installGameFiles(logFunc) {
-  const folders = ['mods', 'resourcepacks', 'versions/fabric-loader-0.14.23-1.18.2'];
-  const files = ['gorlocraftProfile.json', 'servers.dat', 'options.txt'];
+async function updateClient(logFunc) {
+  return new Promise(async (res, rej) => {
+    resolve = res;
+    const folders = ['mods', 'resourcepacks', 'versions/fabric-loader-0.14.23-1.18.2', 'resourcepacks/Graphics'];
+    const files = ['gorlocraftProfile.json', 'servers.dat', 'options.txt'];
 
-  var totalFiles = [];
-
-  console.log(directory);
+    for(folder of folders) {
+      const folderPath = path.join(directory, folder);
   
-  for(folder of folders) {
-    const folderPath = path.join(directory, folder);
+      if(!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, {recursive: true});
+      }
+  
+      const folderData = await getFile(folder).then(res => res.data);
+      const clientFolderContent = profileManager.getFolderContent(folderPath);
+      if(!clientFolderContent) {
+        logFunc({outputText:"ERROR: folder cannot find", type:'error'});
+        rej("ERROR");
+      }
 
-    if(!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath, {recursive: true});
+      for(file of folderData) {
+
+        if(!clientFolderContent.find(el => el.name === file.name)) {
+          filesCount++;
+          installFile(folderPath, file, logFunc);
+        }
+      }
+    }
+    
+    const clientFolderContent = profileManager.getFolderContent(directory);
+    if(!clientFolderContent) {
+      logFunc({outputText:"ERROR: folder cannot find", type:'error'});
+      rej("ERROR");
     }
 
-    const folderData = await getFile(folder).then(res => res.data);
-
-    for(file of folderData) {
-      await installFile(folderPath, file, logFunc);
+    for(file of files) {
+      if(!clientFolderContent.find(el => el.name === file)) {
+        filesCount++;
+        const fileData = await getFile(file).then(res => res.data);
+        installFile(directory, fileData, logFunc);
+      }
     }
-  }
 
-  for(file of files) {
-    const fileData = await getFile(file).then(res => res.data);
-    await installFile(directory, fileData, logFunc);
-  }
-
-  return totalFiles;
+    updateProfile(logFunc);
+  });
 }
 
 function getFile(filePath) {
@@ -99,7 +128,7 @@ function convertBaseToUtf(str) {
 async function updateAvailable() {
   var clientVersion = profileManager.getVersion();
 
-  if(clientVersion == null) return null;
+  if(clientVersion == null) return true;
   var serverVersion = await getVersion();
 
   console.log(`client: ${clientVersion}\nserver: ${serverVersion}`);
@@ -107,20 +136,10 @@ async function updateAvailable() {
   return clientVersion !== serverVersion;
 }
 
-async function updateClient(logFunc) {
-  const clientMods = profileManager.getMods();
-  const serverMods = await getMods();
-
-  for(mod of serverMods) {
-    if(!clientMods.find(el => el.name === mod.name)) {
-        const fileDirectory = path.join(directory, 'mods');
-        await installFile(fileDirectory, mod, logFunc);
-    }
-  }
-
+async function updateProfile(logFunc) {
   const serverProfile = await getProfile();
   profileManager.updateProfile(serverProfile);
-  logFunc("PROFILE UPDATED")
+  logFunc({outputText: "PROFILE UPDATED", type: 'normal'})
 }
 
-module.exports = { getFile, updateAvailable, updateClient, installGameFiles };
+module.exports = { getFile, updateAvailable, updateClient };

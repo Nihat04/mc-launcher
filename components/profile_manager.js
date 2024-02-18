@@ -49,4 +49,18 @@ function getProperties() {
     return JSON.parse(fileData);
 }
 
-module.exports = { exist, getVersion, getMods, updateProfile, saveProperties, getProperties }
+function getFolderContent(folderPath = '') {
+    if(folderPath === '') folderPath = directory;
+
+    if(!fs.existsSync(folderPath)) return null;
+
+    const folderContent = fs.readdirSync(folderPath);
+    return folderContent.map(el => {
+        return {
+            name: el
+        }
+    })
+}
+
+module.exports = { exist, getVersion, getMods, updateProfile, 
+                    saveProperties, getProperties, getFolderContent }

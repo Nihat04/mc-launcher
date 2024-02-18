@@ -21,17 +21,24 @@ const createWindow = () => {
             contextIsolation: true,
             nodeIntegration: true,
             preload: path.join(__dirname, "preload.js"),
-            devTools: false
+            devTools: true
         }
     });
 
     mainWin.loadFile('renderer/index.html');
 }
 
-ipcMain.on('game:run', (e, data) => {
+ipcMain.on('game:run', async (e, data) => {
     const {nickName} = data;
-    let minecraft = mcLauncher.launch(nickName);
-    minecraft.then(() => mainWin.close());
+    let minecraft = await mcLauncher.launch(nickName);
+
+    minecraft.launcher.on('download', (e) => mainWin.webContents.send('game:log', e) );
+
+    minecraft.launcher.on('debug', (e) => mainWin.webContents.send('game:log', e) );
+
+    minecraft.launcher.on('data', (e) => mainWin.webContents.send('game:log', e) );
+
+    // minecraft.minecraft.then(() => mainWin.close());
 });
 
 ipcMain.on('window:close', (e, data) => {
