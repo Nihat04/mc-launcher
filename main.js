@@ -32,16 +32,8 @@ ipcMain.on("game:run", async (e, data) => {
     const { nickName } = data;
     let minecraft = await mcLauncher.launch(nickName);
 
-    minecraft.launcher.on("download", (e) =>
-        mainWin.webContents.send("game:log", e)
-    );
-
-    minecraft.launcher.on("debug", (e) =>
-        mainWin.webContents.send("game:log", e)
-    );
-
-    minecraft.launcher.on("data", (e) =>
-        mainWin.webContents.send("game:log", e)
+    minecraft.launcher.on("progress", (e) => 
+        mainWin.webContents.send("game:file-download", {current: e.task, total: e.total})
     );
 
     minecraft.minecraft.then(() => {

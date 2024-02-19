@@ -21,13 +21,13 @@ playBtn.addEventListener('click', async (e) => {
     loader.classList.add('visible');
 
     if(await update.available()) {
-        await update.updateClient(screenLog);
+        await update.updateClient(screenLog, updateProgress);
         await update.updateProfile().then(() => screenLog({outputText:'PROFILE UPDATED', type:'success'}));
     }
     
     profileManager.saveProperties({username})
     screenLog({outputText:'MINECRAFT LAUNCHED', type:'success'});
-    // ipcRenderer.send('game:run', {nickName: username});
+    ipcRenderer.send('game:run', {nickName: username});
 });
 
 closeLink.addEventListener('click', () => {
@@ -44,7 +44,7 @@ if(properties !== null) {
 }
 
 const screenLog = (data) => {
-    const {outputText, type, filesArray} = data;
+    const {outputText, type} = data;
 
     if(informationPanelLogger.children.length >= 150) {
         informationPanelLogger.children[0].remove();
@@ -54,16 +54,16 @@ const screenLog = (data) => {
         <p class="information-panel__logger__log ${type ? "information-panel__log__"+type : ""}">${outputText}</p>
     `
 
-    if(filesArray) {
-        const progressText = `${filesArray.length}`
-        informationPanelProgress.textContent = progressText;
-    }
-
     informationPanelLogger.scrollTop = informationPanelLogger.scrollHeight - informationPanelLogger.clientHeight;
 }
 
-ipcRenderer.on('game:log', (e, data) => {
-    screenLog({outputText:e,type:"normal"});
+function updateProgress(current, total) {
+    informationPanelProgress.textContent = `${current}/${total}`;
+}
+
+ipcRenderer.on('game:file-download', (data) => {
+    const {current, total} = data;
+    updateProgress(current, total);
 });
 
 ipcRenderer.on('game:launched', () => {

@@ -13,40 +13,33 @@ const octokit = new Octokit();
 
 var resolve = null;
 var filesArr = [];
+var filesMax = 0;
 
-async function installFile(folderPath, fileData, logFunc = null) {
+async function installFile(folderPath, fileData, logFunc = null, filesLog) {
     if (fileData.type === "dir") {
         if (logFunc)
             logFunc({ outputText: "folder is not file", type: "error" });
         return;
     }
-
+    
+    filesArr.push(fileData.name);
+    filesMax = Math.max(filesMax, filesArr.length);
     const newFile = fs.createWriteStream(path.join(folderPath, fileData.name));
 
     https.get(fileData.download_url, (res) => {
         res.pipe(newFile);
     });
     newFile.on("finish", () => {
-        if (logFunc !== null)
-            logFunc({
-                outputText: fileData.name,
-                type: "success",
-                filesArray: filesArr,
-            });
+        filesLog(filesArr.length, filesMax);
         newFile.close();
         filesArr = filesArr.filter((el) => el !== fileData.name);
         if (filesArr.length === 0) {
-            logFunc({
-              outputText: `Files installed`,
-              type: 'success',
-              filesArray: filesArr
-            });
             resolve("done");
         }
     });
 }
 
-async function updateClient(logFunc) {
+async function updateClient(logFunc, filesLog) {
     return new Promise(async (res, rej) => {
         resolve = res;
         const folders = [
@@ -76,8 +69,7 @@ async function updateClient(logFunc) {
 
             for (file of folderData) {
                 if (!clientFolderContent.find((el) => el.name === file.name)) {
-                    filesArr.push(file.name);
-                    installFile(folderPath, file, logFunc);
+                    installFile(folderPath, file, logFunc, filesLog);
                 }
             }
         }
@@ -90,9 +82,8 @@ async function updateClient(logFunc) {
 
         for (file of files) {
             if (!clientFolderContent.find((el) => el.name === file)) {
-                filesArr.push(file);
                 const fileData = await getFile(file).then((res) => res.data);
-                installFile(directory, fileData, logFunc);
+                installFile(directory, fileData, logFunc, filesLog);
             }
         }
     });
