@@ -1,13 +1,13 @@
+const loader = document.querySelector('.loader')
 const playBtn = document.querySelector("#play-btn");
 const nickInput = document.querySelector('#nick-name');
+const updateWindow = document.querySelector('.update');
 const closeLink = document.querySelector('.header__window-close__link');
 const minimizeLink = document.querySelector('.header__window-minimize__link')
-const updateWindow = document.querySelector('.update');
 const updateWindowNoBtn = document.querySelector('.update__no-btn');
 const updateWindowYesBtn = document.querySelector('.update__yes-btn');
 const informationPanelLogger = document.querySelector('.information-panel__logger');
 const informationPanelProgress = document.querySelector('.information-panel__progress');
-const loader = document.querySelector('.loader')
 
 playBtn.addEventListener('click', async (e) => {
     e.preventDefault();
@@ -22,11 +22,12 @@ playBtn.addEventListener('click', async (e) => {
 
     if(await update.available()) {
         await update.updateClient(screenLog);
+        await update.updateProfile().then(() => screenLog({outputText:'PROFILE UPDATED', type:'success'}));
     }
     
     profileManager.saveProperties({username})
     screenLog({outputText:'MINECRAFT LAUNCHED', type:'success'});
-    ipcRenderer.send('game:run', {nickName: username});
+    // ipcRenderer.send('game:run', {nickName: username});
 });
 
 closeLink.addEventListener('click', () => {
@@ -43,7 +44,7 @@ if(properties !== null) {
 }
 
 const screenLog = (data) => {
-    const {outputText, filesDownloaded, filesTotal, type} = data;
+    const {outputText, type, filesArray} = data;
 
     if(informationPanelLogger.children.length >= 150) {
         informationPanelLogger.children[0].remove();
@@ -53,8 +54,8 @@ const screenLog = (data) => {
         <p class="information-panel__logger__log ${type ? "information-panel__log__"+type : ""}">${outputText}</p>
     `
 
-    if(filesDownloaded && filesTotal) {
-        const progressText = `${filesDownloaded}/${filesTotal}`
+    if(filesArray) {
+        const progressText = `${filesArray.length}`
         informationPanelProgress.textContent = progressText;
     }
 

@@ -19,8 +19,7 @@ let opts = {
     memory: {
         max: "10G",
         min: "4G"
-    },
-    javaPath: 'javaw.exe'
+    }
 }
 
 function launch(nickName) {
