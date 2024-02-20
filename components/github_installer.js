@@ -11,37 +11,8 @@ const { directory } = require("./mc_launcher");
 const PROFILE_PATH = "gorlocraftProfile.json";
 const octokit = new Octokit();
 
-var resolve = null;
-var filesArr = [];
-var filesMax = 0;
-
-async function installFile(folderPath, fileData, logFunc = null, filesLog) {
-    if (fileData.type === "dir") {
-        if (logFunc)
-            logFunc({ outputText: "folder is not file", type: "error" });
-        return;
-    }
-    
-    filesArr.push(fileData.name);
-    filesMax = Math.max(filesMax, filesArr.length);
-    const newFile = fs.createWriteStream(path.join(folderPath, fileData.name));
-
-    https.get(fileData.download_url, (res) => {
-        res.pipe(newFile);
-    });
-    newFile.on("finish", () => {
-        filesLog(filesArr.length, filesMax);
-        newFile.close();
-        filesArr = filesArr.filter((el) => el !== fileData.name);
-        if (filesArr.length === 0) {
-            resolve("done");
-        }
-    });
-}
-
-async function updateClient(logFunc, filesLog) {
-    return new Promise(async (res, rej) => {
-        resolve = res;
+async function updateClient(updateProgressFunc) {
+    return new Promise(async (resolve, reject) => {
         const folders = [
             "mods",
             "resourcepacks",
@@ -50,40 +21,54 @@ async function updateClient(logFunc, filesLog) {
         ];
         const files = ["servers.dat", "options.txt"];
 
+        
+        const progress = {
+            done: 0,
+            total: 0
+        };
+
+        const installFile = async (folderPath, fileData) => {
+            if (fileData.type === "dir") {
+                return;
+            }
+            
+            progress.total++;
+            const newFile = fs.createWriteStream(path.join(folderPath, fileData.name));
+        
+            https.get(fileData.download_url, (res) => {
+                res.pipe(newFile);
+            });
+            newFile.on("finish", () => {
+                if(updateProgressFunc) updateProgressFunc(progress.done, progress.total);
+                else console.log(`${progress.done}/${progress.total}`);
+                newFile.close();
+                progress.done++;
+                if (progress.done === progress.total) resolve("done");
+            });
+        }
+
         for (folder of folders) {
             const folderPath = path.join(directory, folder);
-
-            if (!fs.existsSync(folderPath))
-                fs.mkdirSync(folderPath, { recursive: true });
+            if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
 
             const folderData = await getFile(folder).then((res) => res.data);
-            const clientFolderContent =
-                profileManager.getFolderContent(folderPath);
-            if (!clientFolderContent) {
-                logFunc({
-                    outputText: "ERROR: folder cannot find",
-                    type: "error",
-                });
-                rej("ERROR");
-            }
+            const clientFolderContent = profileManager.getFolderContent(folderPath);
+            if (!clientFolderContent) reject("ERROR");
 
             for (file of folderData) {
                 if (!clientFolderContent.find((el) => el.name === file.name)) {
-                    installFile(folderPath, file, logFunc, filesLog);
+                    installFile(folderPath, file, updateProgressFunc);
                 }
             }
         }
 
         const clientFolderContent = profileManager.getFolderContent(directory);
-        if (!clientFolderContent) {
-            logFunc({ outputText: "ERROR: folder cannot find", type: "error" });
-            rej("ERROR");
-        }
+        if (!clientFolderContent) reject("ERROR");
 
         for (file of files) {
             if (!clientFolderContent.find((el) => el.name === file)) {
                 const fileData = await getFile(file).then((res) => res.data);
-                installFile(directory, fileData, logFunc, filesLog);
+                installFile(directory, fileData);
             }
         }
     });
@@ -129,10 +114,10 @@ function convertBaseToUtf(str) {
 }
 
 async function updateAvailable() {
-    var clientVersion = profileManager.getVersion();
+    let clientVersion = profileManager.getVersion();
 
     if (clientVersion == null) return true;
-    var serverVersion = await getVersion();
+    let serverVersion = await getVersion();
 
     console.log(`client: ${clientVersion}\nserver: ${serverVersion}`);
 

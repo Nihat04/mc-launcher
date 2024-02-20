@@ -2,9 +2,6 @@ const { app, BrowserWindow, ipcMain, globalShortcut } = require("electron");
 const path = require("path");
 
 const mcLauncher = require("./components/mc_launcher");
-const profileManager = require("./components/profile_manager");
-const githubInstaller = require("./components/github_installer");
-const { mainModule } = require("process");
 
 let mainWin;
 

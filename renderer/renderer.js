@@ -21,7 +21,7 @@ playBtn.addEventListener('click', async (e) => {
     loader.classList.add('visible');
 
     if(await update.available()) {
-        await update.updateClient(screenLog, updateProgress);
+        await update.updateClient(updateProgress).then(() => screenLog({outputText:"files downloaded", type:'success'}));
         await update.updateProfile().then(() => screenLog({outputText:'PROFILE UPDATED', type:'success'}));
     }
     
@@ -37,11 +37,6 @@ closeLink.addEventListener('click', () => {
 minimizeLink.addEventListener('click', () => {
     ipcRenderer.send('window:minimize', {});
 })
-
-const properties = profileManager.getProperties();
-if(properties !== null) {
-    nickInput.value = properties.username;
-}
 
 const screenLog = (data) => {
     const {outputText, type} = data;
@@ -69,3 +64,8 @@ ipcRenderer.on('game:file-download', (data) => {
 ipcRenderer.on('game:launched', () => {
     loader.classList.remove('visible');
 });
+
+const properties = profileManager.getProperties();
+if(properties !== null) {
+    nickInput.value = properties.username;
+}

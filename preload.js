@@ -10,7 +10,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 
 contextBridge.exposeInMainWorld('update', {
     available: () => githubInstaller.updateAvailable(),
-    updateClient: (logFunc, filesLog) => githubInstaller.updateClient(logFunc, filesLog),
+    updateClient: (updateProgressFunc) => githubInstaller.updateClient(updateProgressFunc),
     updateProfile: () => githubInstaller.updateProfile()
 });
 
