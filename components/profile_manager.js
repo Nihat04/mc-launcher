@@ -1,8 +1,10 @@
 const { directory } = require("./mc_launcher");
+const { convertBaseToUtf, convertUtfToBase } = require("./baseConverter");
+
 const path = require('path');
 const fs = require('fs');
 
-const profilePath = path.join(directory, "gorlocraftProfile.json");
+const profilePath = path.join(directory, "gorloProfile.json");
 const modsFolderPath = path.join(directory, "mods");
 
 function exist() {
@@ -13,6 +15,16 @@ function getProfile() {
     if(!fs.existsSync(profilePath)) return null;
     const jsonObj = fs.readFileSync(profilePath);
     return JSON.parse(jsonObj);
+}
+
+function getFilesToUpdate() {
+    const profile = getProfile();
+    return profile.filesToUpadte;
+}
+
+function getFoldersToUpdate() {
+    const profile = getProfile();
+    return profile.foldersToUpdate;
 }
 
 function updateProfile(obj) {
@@ -62,5 +74,6 @@ function getFolderContent(folderPath = '') {
     })
 }
 
-module.exports = { exist, getVersion, getMods, updateProfile, 
-                    saveProperties, getProperties, getFolderContent }
+module.exports = { exist, getVersion, updateProfile, 
+                    saveProperties, getProperties, getFolderContent,
+                    getFilesToUpdate, getFoldersToUpdate }

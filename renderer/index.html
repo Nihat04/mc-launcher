@@ -1,54 +1,83 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self'">
-    <link rel="stylesheet" href="normalize.css">
-    <link rel="stylesheet" href="styles.css" />
-    <title>GorloCraft</title>
-  </head>
-  <body>
-    <div class="container">
-      <header class="header">
-        <div class="header__settings">
-          <a class="header__setting-link" href="#">
-            <img class="header__settings-icon" src="../assets/svg/settings-icon.svg" alt="настройки">
-          </a>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self'">
+  <link rel="stylesheet" href="normalize.css">
+  <link rel="stylesheet" href="styles.css" />
+  <title>GorloCraft</title>
+</head>
+
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header__settings">
+        <button class="header__setting-link btn" href="#">
+          <img class="header__settings-icon" src="../assets/svg/settings-icon.svg" alt="настройки">
+        </button>
+      </div>
+      <div class="header__drag-area">
+        <div class="header__logo">
+          <img draggable="false" class="header__logo__img" src="../assets/svg/gorlo-logo.svg" alt="логотип горло">
         </div>
-        <div class="header__drag-area"></div>
-        <div class="header__window-manager">
-          <a href="#" class="header__window-minimize__link">
-            <img src="../assets/svg/minimize-icon.svg" alt="свернуть окно" class="header__window-minimize-icon">
-          </a>
-          <a href="#" class="header__window-close__link">
-            <img src="../assets/svg/close-icon.svg" alt="закрыть окно" class="header__window-close-icon">
-          </a>
+      </div>
+      <div class="header__window-manager">
+        <a href="#" class="header__window-minimize__link">
+          <svg class="header__window-minimize__icon" width="21" height="21" viewBox="0 0 21 21" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_1_19)">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M2.125 10.0179C2.125 9.32629 2.69583 8.76562 3.4 8.76562H17C17.7041 8.76562 18.275 9.32629 18.275 10.0179C18.275 10.7094 17.7041 11.2701 17 11.2701H3.4C2.69583 11.2701 2.125 10.7094 2.125 10.0179Z"
+                fill="white" />
+            </g>
+            <defs>
+              <clipPath id="clip0_1_19">
+                <rect width="20.4" height="20.0357" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+        </a>
+        <a href="#" class="header__window-close__link">
+          <svg class="header__window-close__icon" width="21" height="21" viewBox="0 0 21 21"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M18.7136 2.7787C18.3816 2.45267 17.8434 2.45267 17.5115 2.7787L11.3112 8.86821L5.11105 2.7787C4.7791 2.45267 4.24091 2.45267 3.90897 2.7787C3.57702 3.10471 3.57702 3.6333 3.90897 3.95931L10.1092 10.0488L3.90898 16.1383C3.57703 16.4643 3.57703 16.9929 3.90898 17.3189C4.24093 17.6449 4.77912 17.6449 5.11106 17.3189L11.3112 11.2294L17.5115 17.3189C17.8434 17.6449 18.3816 17.6449 18.7136 17.3189C19.0455 16.9929 19.0455 16.4643 18.7136 16.1383L12.5133 10.0488L18.7136 3.95931C19.0455 3.6333 19.0455 3.10471 18.7136 2.7787Z"
+              fill="white" />
+          </svg>
+        </a>
+      </div>
+    </header>
+    <main>
+      <section class="play">
+        <div class="play__form">
+          <input id="nick-name" class="play__inp" type="text" placeholder="Имя пользователя">
+          <button id="play-btn" class="btn play__btn">Играть</button>
         </div>
-      </header>
-      <main>
-        <section class="information-panel">
-          <div class="information-panel__logger"></div>
-          <div class="information-panel__progress"></div>
-        </section>
-        <section class="play">
-          <form class="play__form">
-            <input id="nick-name" class="play__inp" type="text" placeholder="Имя пользователя">
-            <button id="play-btn" class="btn play__btn">Играть</button> 
-          </form>
-        </section>
-        <section class="update">
-          <h2 class="update__header">Обновление</h2>
-          <p class="update__descr">Вышло новое обновление клиента!</p>
-          <div class="update__btns">
-            <button class="update__btn update__no-btn">НЕТ</button>
-            <button class="update__btn update__yes-btn">Обновится</button>
-          </div>
-        </section>
-        <span class="loader"></span>
-      </main>
-      <footer></footer>
-    </div>
-  </body>
-  <script defer src="renderer.js"></script>
+      </section>
+      <section class="progress">
+        <progress class="progress__bar" max="100" value="0"></progress>
+      </section>
+      <dialog class="settings">
+        <div class="settings__memmory">
+          <p class="settings__memmory__descr">Выделеная память (гб)</p>
+          <input class="settings__memmory__range" type="range" min="1" max="4">
+          <span class="settings__memmory__value"></span>
+        </div>
+        <div class="settings__folder-open">
+          <button class="settings__folder-open__link btn">
+            <svg class="settings__folder-open__img" width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 8.2C3 7.07989 3 6.51984 3.21799 6.09202C3.40973 5.71569 3.71569 5.40973 4.09202 5.21799C4.51984 5 5.0799 5 6.2 5H9.67452C10.1637 5 10.4083 5 10.6385 5.05526C10.8425 5.10425 11.0376 5.18506 11.2166 5.29472C11.4184 5.4184 11.5914 5.59135 11.9373 5.93726L12.0627 6.06274C12.4086 6.40865 12.5816 6.5816 12.7834 6.70528C12.9624 6.81494 13.1575 6.89575 13.3615 6.94474C13.5917 7 13.8363 7 14.3255 7H17.8C18.9201 7 19.4802 7 19.908 7.21799C20.2843 7.40973 20.5903 7.71569 20.782 8.09202C21 8.51984 21 9.0799 21 10.2V15.8C21 16.9201 21 17.4802 20.782 17.908C20.5903 18.2843 20.2843 18.5903 19.908 18.782C19.4802 19 18.9201 19 17.8 19H6.2C5.07989 19 4.51984 19 4.09202 18.782C3.71569 18.5903 3.40973 18.2843 3.21799 17.908C3 17.4802 3 16.9201 3 15.8V8.2Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </dialog>
+      <span class="loader"></span>
+    </main>
+    <footer></footer>
+  </div>
+</body>
+<script defer src="renderer.js"></script>
+
 </html>

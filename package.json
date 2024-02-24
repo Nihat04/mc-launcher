@@ -1,8 +1,8 @@
 {
-  "name": "mc-launcher",
-  "productName": "GorloCraft",
-  "version": "0.4.95",
-  "description": "minecraft launcher for GorloCraft Server",
+  "name": "gorlo-mc-launcher",
+  "productName": "Gorlo",
+  "version": "0.5.1",
+  "description": "minecraft launcher for Gorlo Server",
   "main": "main.js",
   "scripts": {
     "dev": "electron .",
@@ -14,7 +14,7 @@
   },
 
   "build": {
-    "appId": "gorlocraft",
+    "appId": "gorlo-minecraft",
     "win": {
       "target": [
         "nsis"
@@ -25,7 +25,7 @@
       "oneClick": true,
       "installerIcon": "icon.ico",
       "uninstallerIcon": "icon.ico",
-      "uninstallDisplayName": "gorlocraft-uninstaller",
+      "uninstallDisplayName": "gorlo-uninstaller",
       "allowToChangeInstallationDirectory": false
     }
   },

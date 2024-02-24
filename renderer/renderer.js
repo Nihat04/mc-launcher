@@ -1,59 +1,76 @@
 const loader = document.querySelector('.loader')
 const playBtn = document.querySelector("#play-btn");
 const nickInput = document.querySelector('#nick-name');
-const updateWindow = document.querySelector('.update');
 const closeLink = document.querySelector('.header__window-close__link');
 const minimizeLink = document.querySelector('.header__window-minimize__link')
-const updateWindowNoBtn = document.querySelector('.update__no-btn');
-const updateWindowYesBtn = document.querySelector('.update__yes-btn');
-const informationPanelLogger = document.querySelector('.information-panel__logger');
-const informationPanelProgress = document.querySelector('.information-panel__progress');
+const settingLink = document.querySelector('.header__setting-link');
+
+let minecraftSettings = profileManager.getProperties()
+if(!minecraftSettings) {
+    minecraftSettings = {
+        memory: {
+            min: 0,
+            max: 4
+        }
+    };
+}
 
 playBtn.addEventListener('click', async (e) => {
-    e.preventDefault();
 
     const username = nickInput.value;
     if(!username) {
-        screenLog({outputText:'INVALID USERNAME', type:'error'});
         return;
     }
 
     loader.classList.add('visible');
 
     if(await update.available()) {
-        await update.updateClient(updateProgress).then(() => screenLog({outputText:"files downloaded", type:'success'}));
-        await update.updateProfile().then(() => screenLog({outputText:'PROFILE UPDATED', type:'success'}));
+        await update.updateClient(updateProgress);
+        await update.updateProfile();
     }
     
-    profileManager.saveProperties({username})
-    screenLog({outputText:'MINECRAFT LAUNCHED', type:'success'});
-    ipcRenderer.send('game:run', {nickName: username});
+    profileManager.saveProperties(minecraftSettings);
+    ipcRenderer.send('game:run', minecraftSettings);
 });
 
 closeLink.addEventListener('click', () => {
     ipcRenderer.send('window:close', {});
-})
+});
 
 minimizeLink.addEventListener('click', () => {
     ipcRenderer.send('window:minimize', {});
-})
+});
 
-const screenLog = (data) => {
-    const {outputText, type} = data;
+settingLink.addEventListener('click', () => {
+    const modal = document.querySelector('.settings');
+    const memoryRange = document.querySelector('.settings__memmory__range');
+    const memoryValue = document.querySelector('.settings__memmory__value');
+    const folderBtn = document.querySelector('.settings__folder-open__link');
 
-    if(informationPanelLogger.children.length >= 150) {
-        informationPanelLogger.children[0].remove();
+    if(modal.open) {
+        modal.close()
+        return;
     }
+    
+    const totalRam = Math.round(system.totalmem() / Math.pow(2, 30));
+    memoryRange.setAttribute('max', totalRam);
+    memoryRange.value = minecraftSettings.memory.max;
+    memoryRange.addEventListener('input', (e) => {
+        e.preventDefault();
+        minecraftSettings.memory.max = memoryRange.value;
+        memoryValue.textContent = memoryRange.value;
+    })
+    memoryValue.textContent = memoryRange.value;
 
-    informationPanelLogger.innerHTML += `
-        <p class="information-panel__logger__log ${type ? "information-panel__log__"+type : ""}">${outputText}</p>
-    `
+    folderBtn.addEventListener('click', () => system.openMinecraftFolder());
 
-    informationPanelLogger.scrollTop = informationPanelLogger.scrollHeight - informationPanelLogger.clientHeight;
-}
+    modal.show();
+});
 
+const progressBar = document.querySelector('.progress__bar');
 function updateProgress(current, total) {
-    informationPanelProgress.textContent = `${current}/${total}`;
+    progressBar.setAttribute('max', total);
+    progressBar.setAttribute('value', current);
 }
 
 ipcRenderer.on('game:file-download', (data) => {
@@ -65,7 +82,6 @@ ipcRenderer.on('game:launched', () => {
     loader.classList.remove('visible');
 });
 
-const properties = profileManager.getProperties();
-if(properties !== null) {
-    nickInput.value = properties.username;
+if(minecraftSettings.username) {
+    nickInput.value = minecraftSettings.username;
 }

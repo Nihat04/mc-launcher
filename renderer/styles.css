@@ -19,13 +19,18 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+:root {
+    --window-width: 950px;
+    --window-height: 600px;
+}
+
 .container {
     position: absolute;
-    width: 950px;
-    height: 600px;
-    border-radius: 20px;
+    width: var(--window-width);
+    height: var(--window-height);
+    border-radius: 8px;
     background-image: url("../assets/img/launcher-bg.png");
-    background-size: 950px 600px;
+    background-size: var(--window-width) var(--window-height);
     background-repeat: no-repeat;
     overflow: auto;
 }
@@ -78,8 +83,16 @@ body {
 .header__drag-area {
     -webkit-user-select: none;
     -webkit-app-region: drag;
+    display: flex;
     width: 850px;
     height: 40px;
+    justify-content: center;
+}
+
+.header__logo__img {
+    --size: 80px;
+    width: var(--size);
+    height: var(--size);
 }
 
 .header__window-manager {
@@ -93,89 +106,15 @@ body {
     user-select: none;
 }
 
-.header__window-minimize-icon:hover {
-    filter: invert(78%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%);
+.header__window-minimize__icon:hover {
+    fill: gray;
 }
 
-.header__window-close-icon:hover {
-    filter: invert(78%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%);
+.header__window-close__icon:hover {
+    fill: red;
 }
 
 /* MAIN */
-
-/* information-panel */
-
-.information-panel {
-    position: relative;
-    padding-bottom: 10px;
-    width: 300px;
-    height: calc(100vh - 55px);
-    top: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 0px 6px 0 0;
-}
-
-.information-panel__logger {
-    max-height: calc(100vh - 55px - 30px);
-    overflow-y: visible;
-    overflow-x: hidden;
-}
-
-.information-panel__progress {
-    position: absolute;
-    height: 10px;
-    left: 50%;
-    bottom: 0;
-    color: white;
-    font-size: 20px;
-    font-weight: 700;
-    transform: translate(-50%, -150%);
-}
-
-.information-panel__logger__log {
-    margin: 0;
-    color: #fff;
-    font-size: small;
-}
-
-.information-panel__log__success {
-    color: green;
-}
-
-.information-panel__log__error {
-    color: red;
-}
-
-.information-panel__log__normal {
-    color: white;
-}
-
-.information-panel__log__important {
-    color: white;
-    font-weight: 600;
-}
-
-.information-panel__logger::-webkit-scrollbar-track
-{
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-	border-radius: 10px;
-	background-color: transparent;
-}
-
-.information-panel__logger::-webkit-scrollbar
-{
-    padding-left: 10px;
-	width: 5px;
-	background-color: transparent;
-}
-
-.information-panel__logger::-webkit-scrollbar-thumb
-{
-	border-radius: 10px;
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-	background-color: #666;
-}
 
 /* play */
 
@@ -228,50 +167,72 @@ body {
     background-color: #3d0000;
 }
 
-/* update */
+/* settings */
 
-.update {
+.settings {
     position: absolute;
-    display: none;
-    width: 250px;
-    height: 175px;
-    top: 50%;
-    left: 50%;
+    margin: 0;
+    padding: 10px;
+    max-width: var(--settings-width);
+    max-height: var(--settings-height);
+    left: 20px;
+    top: 60px;
     color: #fff;
-    text-align: center;
-    background-color: rgba(0, 0, 0, 0.8);
-    border-radius: 20px;
-    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 5px;
 }
 
-.update__descr {
-    margin-bottom: 30px;
+.settings__memmory__range {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-right: 5px;
+    background: transparent;
+    width: calc(100% - 30px);
 }
 
-.update__btns {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
+.settings__memmory__range::-webkit-slider-runnable-track {
+    background-color: #0b5801;
+    height: 15px;
 }
 
-.update__btn {
-    border-radius: 8px;
-    color: #fff;
-    font-size: 15px;
+.settings__memmory__range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    height: 15px;
+    width: 15px;
+}
+
+.settings__memmory__value {
     font-weight: 600;
-    cursor: pointer;
 }
 
-.update__yes-btn {
-    width: 145px;
-    height: 30px;
-    background-color: #289900;
+.settings__folder-open {
+    width: 50px;
+    height: 50px;
 }
 
-.update__no-btn {
-    width: 55px;
-    height: 30px;
-    background-color: #545454;
+.settings__folder-open__img {
+    width: 50px;
+    height: 50px;
+    fill: #fff;
+}
+
+/* progress */
+
+.progress {
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    bottom: 0;
+    left: 0;
+}
+
+.progress__bar {
+    -webkit-appearance: none;
+    display: inline-block;
+    width: 100%;
 }
 
 /* loader */

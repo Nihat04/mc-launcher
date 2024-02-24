@@ -1,17 +1,19 @@
 const { Octokit } = require("@octokit/rest");
-const base64 = require("base-64");
-const utf8 = require("utf8");
 const https = require("https");
 const fs = require("fs");
 const path = require("path");
 
 const profileManager = require("./profile_manager");
 const { directory } = require("./mc_launcher");
+const { convertBaseToUtf } = require("./baseConverter");
 
-const PROFILE_PATH = "gorlocraftProfile.json";
+const DIRECTORY_OWNER = "Nihat04";
+const DIRECTORY_NAME = "GorloMinecraft";
+
+const PROFILE_PATH = "gorloProfile.json";
 const octokit = new Octokit();
 
-async function updateClient(updateProgressFunc) {
+async function updateClient(updateProgressFunc, installAll = false) {
     return new Promise(async (resolve, reject) => {
         const folders = [
             "mods",
@@ -21,7 +23,6 @@ async function updateClient(updateProgressFunc) {
         ];
         const files = ["servers.dat", "options.txt"];
 
-        
         const progress = {
             done: 0,
             total: 0
@@ -56,7 +57,7 @@ async function updateClient(updateProgressFunc) {
             if (!clientFolderContent) reject("ERROR");
 
             for (file of folderData) {
-                if (!clientFolderContent.find((el) => el.name === file.name)) {
+                if (installAll || !clientFolderContent.find((el) => el.name === file.name)) {
                     installFile(folderPath, file, updateProgressFunc);
                 }
             }
@@ -66,7 +67,7 @@ async function updateClient(updateProgressFunc) {
         if (!clientFolderContent) reject("ERROR");
 
         for (file of files) {
-            if (!clientFolderContent.find((el) => el.name === file)) {
+            if (installAll || !clientFolderContent.find((el) => el.name === file)) {
                 const fileData = await getFile(file).then((res) => res.data);
                 installFile(directory, fileData);
             }
@@ -75,17 +76,12 @@ async function updateClient(updateProgressFunc) {
 }
 
 function getFile(filePath) {
+    const seasonName = "minecraft_season_1";
+    console.log(filePath);
     return octokit.request("GET /repos/{owner}/{repo}/contents/{path}", {
-        owner: "Nihat04",
-        repo: "GorloCraft",
-        path: filePath,
-    });
-}
-
-async function getRepo() {
-    return octokit.request("GET /repos/{owner}/{repo}/installation", {
-        owner: "Nihat04",
-        repo: "GorloCraft",
+        owner: DIRECTORY_OWNER,
+        repo: DIRECTORY_NAME,
+        path: path.join(seasonName, filePath)
     });
 }
 
@@ -101,16 +97,6 @@ async function getProfile() {
 async function getVersion() {
     const profileData = await getProfile();
     return profileData.modsVersion;
-}
-
-async function getMods() {
-    const folderData = await getFile("mods").then((res) => res.data);
-    return folderData;
-}
-
-function convertBaseToUtf(str) {
-    const strBytes = base64.decode(str);
-    return utf8.decode(strBytes);
 }
 
 async function updateAvailable() {

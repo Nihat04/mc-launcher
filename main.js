@@ -7,7 +7,7 @@ let mainWin;
 
 const createWindow = () => {
     mainWin = new BrowserWindow({
-        icon: path.join(__dirname, "icon.ico"),
+        icon: path.join(__dirname, "assets", "gorlo-logo.ico"),
         width: 950,
         height: 600,
         resizable: false,
@@ -26,8 +26,7 @@ const createWindow = () => {
 };
 
 ipcMain.on("game:run", async (e, data) => {
-    const { nickName } = data;
-    let minecraft = await mcLauncher.launch(nickName);
+    let minecraft = await mcLauncher.launch(data);
 
     minecraft.launcher.on("progress", (e) => 
         mainWin.webContents.send("game:file-download", {current: e.task, total: e.total})
@@ -35,7 +34,6 @@ ipcMain.on("game:run", async (e, data) => {
 
     minecraft.minecraft.then(() => {
         mainWin.close();
-        mainWin.webContents.send("game:launched", {});
     });
 });
 
