@@ -17,6 +17,7 @@ input {
 
 body {
     font-family: Arial, Helvetica, sans-serif;
+    background-color: gray;
 }
 
 :root {
@@ -35,12 +36,18 @@ body {
     overflow: auto;
 }
 
+.btn-reset {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
 .btn {
     cursor: pointer;
 }
 
 .visible {
-    visibility: visible !important; 
+    visibility: visible !important;
 }
 
 /* header */
@@ -208,6 +215,13 @@ body {
     font-weight: 600;
 }
 
+.settings__bottom__btns {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 30px;
+}
+
 .settings__folder-open {
     width: 50px;
     height: 50px;
@@ -217,6 +231,12 @@ body {
     width: 50px;
     height: 50px;
     fill: #fff;
+}
+
+.settings__reinstall__img {
+    --size: 35px;
+    width: var(--size);
+    height: var(--size);
 }
 
 /* progress */
@@ -234,31 +254,3 @@ body {
     display: inline-block;
     width: 100%;
 }
-
-/* loader */
-
-.loader {
-    position: absolute;
-    display: none;
-    width: 48px;
-    height: 48px;
-    top: 50%;
-    left: 50%;
-    border: 5px solid #FFF;
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    transform: translate(-50%, -50%);
-    animation: rotation 1s linear infinite;
-    visibility: hidden;
-    }
-
-    @keyframes rotation {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-    }

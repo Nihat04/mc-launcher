@@ -8,7 +8,7 @@ let mainWin;
 const createWindow = () => {
     mainWin = new BrowserWindow({
         icon: path.join(__dirname, "assets", "gorlo-logo.ico"),
-        width: 950,
+        width: 1200,
         height: 600,
         resizable: false,
         autoHideMenuBar: true,

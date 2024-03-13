@@ -6,35 +6,27 @@ const path = require("path");
 const profileManager = require("./profile_manager");
 const { directory } = require("./mc_launcher");
 const { convertBaseToUtf } = require("./baseConverter");
+const { dir } = require("console");
 
 const DIRECTORY_OWNER = "Nihat04";
 const DIRECTORY_NAME = "GorloMinecraft";
 
-const PROFILE_PATH = "gorloProfile.json";
+const PROFILE_PATH = "minecraft/gorloProfile.json";
 const octokit = new Octokit();
 
 async function updateClient(updateProgressFunc, installAll = false) {
     return new Promise(async (resolve, reject) => {
-        const folders = [
-            "mods",
-            "resourcepacks",
-            "versions/fabric-loader-0.14.23-1.18.2",
-            "resourcepacks/Graphics",
-        ];
-        const files = ["servers.dat", "options.txt"];
-
         const progress = {
             done: 0,
             total: 0
         };
 
-        const installFile = async (folderPath, fileData) => {
-            if (fileData.type === "dir") {
-                return;
-            }
-            
+        const installFile = async (fileData) => {
+            const parentFolderPath = path.dirname(fileData.path)
+            if(!fs.existsSync(parentFolderPath)) fs.mkdirSync(parentFolderPath, {recursive:true});
+
             progress.total++;
-            const newFile = fs.createWriteStream(path.join(folderPath, fileData.name));
+            const newFile = fs.createWriteStream(fileData.path);
         
             https.get(fileData.download_url, (res) => {
                 res.pipe(newFile);
@@ -47,41 +39,46 @@ async function updateClient(updateProgressFunc, installAll = false) {
                 if (progress.done === progress.total) resolve("done");
             });
         }
-
-        for (folder of folders) {
-            const folderPath = path.join(directory, folder);
-            if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
-
-            const folderData = await getFile(folder).then((res) => res.data);
-            const clientFolderContent = profileManager.getFolderContent(folderPath);
-            if (!clientFolderContent) reject("ERROR");
-
-            for (file of folderData) {
-                if (installAll || !clientFolderContent.find((el) => el.name === file.name)) {
-                    installFile(folderPath, file, updateProgressFunc);
+        
+        if(installAll) {
+            const coreFolderData = await getFile(directory).then(res => res.data);
+            const installAllFiles = async (folderData) => {
+                for(file of folderData) {
+                    switch (file.type) {
+                        case 'file':
+                            installFile(file)
+                            break;
+                        case 'dir':
+                            const filefolderData = await getFile(file.path).then(res => res.data);
+                            installAllFiles(filefolderData);
+                            break;
+                    }
                 }
+            };
+            installAllFiles(coreFolderData);
+        } else {
+            const profile = await getProfile();
+            const folders = profile.folderToUpdate;
+            const files = profile.filesToUpdate;
+            const filesToDelete = profile.filesToDelete;
+
+            for(let i = 0; i < files.length; i++) {
+                const fileData = await getFile(files[i]).then(res => res.data);
+                installFile(fileData); 
             }
-        }
 
-        const clientFolderContent = profileManager.getFolderContent(directory);
-        if (!clientFolderContent) reject("ERROR");
-
-        for (file of files) {
-            if (installAll || !clientFolderContent.find((el) => el.name === file)) {
-                const fileData = await getFile(file).then((res) => res.data);
-                installFile(directory, fileData);
+            for(let i = 0; i < filesToDelete.length; i++) {
+                fs.unlinkSync(filesToDelete[i]);
             }
         }
     });
 }
 
 function getFile(filePath) {
-    const seasonName = "minecraft_season_1";
-    console.log(filePath);
     return octokit.request("GET /repos/{owner}/{repo}/contents/{path}", {
         owner: DIRECTORY_OWNER,
         repo: DIRECTORY_NAME,
-        path: path.join(seasonName, filePath)
+        path: filePath
     });
 }
 
@@ -100,6 +97,7 @@ async function getVersion() {
 }
 
 async function updateAvailable() {
+    return false;
     let clientVersion = profileManager.getVersion();
 
     if (clientVersion == null) return true;

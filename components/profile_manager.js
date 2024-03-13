@@ -19,7 +19,7 @@ function getProfile() {
 
 function getFilesToUpdate() {
     const profile = getProfile();
-    return profile.filesToUpadte;
+    return profile.filesToUpdate;
 }
 
 function getFoldersToUpdate() {

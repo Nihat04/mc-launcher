@@ -1,16 +1,16 @@
-const loader = document.querySelector('.loader')
 const playBtn = document.querySelector("#play-btn");
 const nickInput = document.querySelector('#nick-name');
 const closeLink = document.querySelector('.header__window-close__link');
 const minimizeLink = document.querySelector('.header__window-minimize__link')
 const settingLink = document.querySelector('.header__setting-link');
+const reinstallBtn = document.querySelector('.settings__reinstall__btn')
 
 let minecraftSettings = profileManager.getProperties()
 if(!minecraftSettings) {
     minecraftSettings = {
         memory: {
             min: 0,
-            max: 4
+            max: 10
         }
     };
 }
@@ -21,9 +21,12 @@ playBtn.addEventListener('click', async (e) => {
     if(!username) {
         return;
     }
+    minecraftSettings.username = username;
 
-    loader.classList.add('visible');
-
+    if(!profileManager.exist()) {
+        await update.updateClient(updateProgress, true);
+        await update.updateProfile();
+    }
     if(await update.available()) {
         await update.updateClient(updateProgress);
         await update.updateProfile();
@@ -67,6 +70,10 @@ settingLink.addEventListener('click', () => {
     modal.show();
 });
 
+reinstallBtn.addEventListener('click', async () => {
+    await update.updateClient(updateProgress, true);
+})
+
 const progressBar = document.querySelector('.progress__bar');
 function updateProgress(current, total) {
     progressBar.setAttribute('max', total);
@@ -78,10 +85,8 @@ ipcRenderer.on('game:file-download', (data) => {
     updateProgress(current, total);
 });
 
-ipcRenderer.on('game:launched', () => {
-    loader.classList.remove('visible');
-});
-
-if(minecraftSettings.username) {
-    nickInput.value = minecraftSettings.username;
-}
+window.addEventListener('DOMContentLoaded', () => {
+    if(minecraftSettings.username) {
+        nickInput.value = minecraftSettings.username;
+    }
+})

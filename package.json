@@ -22,11 +22,11 @@
       "icon": "icon.ico"
     },
     "nsis": {
-      "oneClick": true,
-      "installerIcon": "icon.ico",
-      "uninstallerIcon": "icon.ico",
+      "oneClick": false,
+      "installerIcon": "./assets/gorlo-logo.ico",
+      "uninstallerIcon": "./assets/gorlo-logo.ico",
       "uninstallDisplayName": "gorlo-uninstaller",
-      "allowToChangeInstallationDirectory": false
+      "allowToChangeInstallationDirectory": true
     }
   },
 

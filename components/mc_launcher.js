@@ -14,16 +14,18 @@ let opts = {
     },
     memory: {
         max: "10G",
-        min: "0G"
+        min: "1G"
+    },
+    quickPlay: {
+        type: "legacy",
+        identifier: "65.21.70.50:25725"
     }
 }
 
 function launch(launchOpts) {
-    console.log(launchOpts);
     opts.authorization = Authenticator.getAuth(launchOpts.username);
     opts.memory.min = launchOpts.memory.min + "G";
     opts.memory.max = launchOpts.memory.max + "G";
-    console.log(opts.memory);
     return {
         minecraft: launcher.launch(opts),
         launcher: launcher
