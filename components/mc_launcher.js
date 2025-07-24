@@ -1,34 +1,32 @@
-const { Client, Authenticator } = require('minecraft-launcher-core');
-const path = require('path');
+const { Client, Authenticator } = require("minecraft-launcher-core");
+const path = require("path");
 
 const launcher = new Client();
-const directory = path.join("minecraft" );
+const directory = path.join("REUNION");
 
 let opts = {
-    authorization: Authenticator.getAuth('Player'),
+    authorization: Authenticator.getAuth("Player"),
     root: directory,
     version: {
-        number: "1.20.1",
+        number: "1.14",
         type: "release",
-        custom: "fabric-loader-0.15.7-1.20.1"
     },
     memory: {
-        max: "10G",
-        min: "1G"
+        max: "6G",
+        min: "4G",
     },
-    quickPlay: {
-        type: "legacy",
-        identifier: "65.21.70.50:25725"
-    }
-}
+};
 
 function launch(launchOpts) {
     opts.authorization = Authenticator.getAuth(launchOpts.username);
     opts.memory.min = launchOpts.memory.min + "G";
     opts.memory.max = launchOpts.memory.max + "G";
+
+    const runner = launcher.launch(opts);
+
     return {
-        minecraft: launcher.launch(opts),
-        launcher: launcher
+        runner,
+        launcher: launcher,
     };
 }
 

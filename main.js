@@ -8,12 +8,10 @@ let mainWin;
 const createWindow = () => {
     mainWin = new BrowserWindow({
         icon: path.join(__dirname, "assets", "gorlo-logo.ico"),
-        width: 1200,
+        width: 600,
         height: 600,
         resizable: false,
         autoHideMenuBar: true,
-        transparent: true,
-        frame: false,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
@@ -28,21 +26,16 @@ const createWindow = () => {
 ipcMain.on("game:run", async (e, data) => {
     let minecraft = await mcLauncher.launch(data);
 
-    minecraft.launcher.on("progress", (e) => 
-        mainWin.webContents.send("game:file-download", {current: e.task, total: e.total})
+    minecraft.launcher.on("progress", (e) =>
+        mainWin.webContents.send("game:file-download", {
+            current: e.task,
+            total: e.total,
+        })
     );
 
     minecraft.minecraft.then(() => {
         mainWin.close();
     });
-});
-
-ipcMain.on("window:close", (e, data) => {
-    mainWin.close();
-});
-
-ipcMain.on("window:minimize", (e, data) => {
-    mainWin.minimize();
 });
 
 app.whenReady().then(() => {
